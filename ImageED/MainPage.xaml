@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ImageED.MainPage">
+    
+    <Grid RowDefinitions="Auto,*,Auto">
+        <!-- Top Section - Image Display and Picker -->
+        <Frame Grid.Row="0" 
+               Margin="20"
+               HeightRequest="300"
+               BorderColor="Gray"
+               CornerRadius="10">
+            <Frame.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnSelectImageClicked"/>
+            </Frame.GestureRecognizers>
+            <Grid>
+                <Image x:Name="PreviewImage"
+                       Aspect="AspectFit"/>
+                <Image HeightRequest="50"
+                       WidthRequest="50"
+                       Opacity="0.7"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"/>
+            </Grid>
+        </Frame>
+
+        <!-- Middle Section - Image List -->
+        <Frame Grid.Row="1" 
+               Margin="20,0,20,20"
+               BorderColor="Gray"
+               CornerRadius="10">
+            <CollectionView x:Name="ImageList"
+                          SelectionMode="Single"
+                          SelectionChanged="OnImageSelected">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <SwipeView>
+                            <SwipeView.RightItems>
+                                <SwipeItems>
+                                    <SwipeItem Text="Delete"
+                                              BackgroundColor="Red"
+                                              Invoked="OnDeleteSwipe"/>
+                                </SwipeItems>
+                            </SwipeView.RightItems>
+                            <Grid Padding="10"
+                                  ColumnDefinitions="*,Auto,Auto">
+                                <Label Text="{Binding Name}"
+                                       VerticalOptions="Center"/>
+                                <Label Grid.Column="1"
+                                       Text="{Binding CreatedAt, StringFormat='{0:MM/dd/yyyy HH:mm}'}"
+                                       VerticalOptions="Center"
+                                       FontSize="12"
+                                       Margin="0,0,10,0"
+                                       TextColor="Gray"/>
+                                <Button Grid.Column="2"
+                                        Text="🗑️"
+                                        FontSize="18"
+                                        BackgroundColor="Transparent"
+                                        TextColor="Red"
+                                        Padding="5"
+                                        Clicked="OnDeleteClicked"
+                                        CommandParameter="{Binding Id}"/>
+                            </Grid>
+                        </SwipeView>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Frame>
+
+        <!-- Bottom Section - Buttons -->
+        <Grid Grid.Row="2"
+              Margin="20,0,20,20"
+              ColumnDefinitions="*,*"
+              ColumnSpacing="20">
+            <Button Grid.Column="0"
+                    Text="Encrypt &amp; Save"
+                    Clicked="OnEncryptClicked"/>
+            <Button Grid.Column="1"
+                    Text="Decrypt &amp; Show"
+                    Clicked="OnDecryptClicked"/>
+        </Grid>
+    </Grid>
+</ContentPage>
