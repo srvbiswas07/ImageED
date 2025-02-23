@@ -1,5 +1,6 @@
 ﻿using ImageED.Helpers;
 using ImageED.Models;
+using static Java.Security.KeyStore;
 
 namespace ImageED
 {
@@ -14,7 +15,7 @@ namespace ImageED
             InitializeComponent();
             _dbHelper = new DatabaseHelper();
             LoadImagesList();
-            PreviewImage.Source = "upload.png"; // Clear preview
+            PreviewImage.Source = "upload.png"; 
         }
 
         private async void LoadImagesList()
@@ -41,16 +42,13 @@ namespace ImageED
 
                 if (result != null)
                 {
-                    // Load the image data
                     using var stream = await result.OpenReadAsync();
                     using var memoryStream = new MemoryStream();
                     await stream.CopyToAsync(memoryStream);
                     _currentImageData = memoryStream.ToArray();
 
-                    // Display the image
                     PreviewImage.Source = ImageSource.FromStream(() => new MemoryStream(_currentImageData));
 
-                    // Clear selection from list
                     ImageList.SelectedItem = null;
                     _selectedImage = null;
                 }
@@ -71,8 +69,8 @@ namespace ImageED
 
             try
             {
-                var password = "p4ssw0rd1ss3cur3"; // In production, get from secure storage
-                var (encryptedData, iv, salt) = EncryptionHelper.EncryptImage(_currentImageData, password);
+                string secretKey = SecretKeyEntry.Text;
+                var (encryptedData, iv, salt) = EncryptionHelper.EncryptImage(_currentImageData, secretKey);
 
                 var entry = new ImageEntry
                 {
@@ -86,10 +84,8 @@ namespace ImageED
                 await _dbHelper.SaveImageAsync(entry);
                 await DisplayAlert("Success", "Image encrypted and saved successfully", "OK");
 
-                // Refresh the list
                 LoadImagesList();
 
-                // Clear current image
                 _currentImageData = null;
                 PreviewImage.Source = "upload.png";
             }
@@ -105,7 +101,7 @@ namespace ImageED
             {
                 _selectedImage = selected;
                 _currentImageData = null;
-                PreviewImage.Source = "upload.png"; // Clear preview
+                PreviewImage.Source = "upload.png"; 
             }
         }
 
@@ -119,12 +115,12 @@ namespace ImageED
 
             try
             {
-                var password = "p4ssw0rd1ss3cur3"; // In production, get from secure storage
+                string secretKey = SecretKeyEntry.Text;
                 var decryptedData = EncryptionHelper.DecryptImage(
                     _selectedImage.EncryptedData,
                     _selectedImage.IV,
                     _selectedImage.Salt,
-                    password
+                    secretKey
                 );
 
                 PreviewImage.Source = ImageSource.FromStream(() => new MemoryStream(decryptedData));
@@ -163,15 +159,13 @@ namespace ImageED
                 {
                     await _dbHelper.DeleteImageAsync(imageId);
 
-                    // Clear preview if the deleted image was selected
                     if (_selectedImage?.Id == imageId)
                     {
                         _selectedImage = null;
                         PreviewImage.Source = null;
-                        PreviewImage.Source = "upload.png"; // Clear preview
+                        PreviewImage.Source = "upload.png"; 
                     }
 
-                    // Refresh the list
                     LoadImagesList();
 
                     await DisplayAlert("Success", "Image deleted successfully", "OK");
@@ -185,6 +179,12 @@ namespace ImageED
             }
         }
 
+
+        private void OnTogglePasswordVisibility(object sender, EventArgs e)
+        {
+            SecretKeyEntry.IsPassword = !SecretKeyEntry.IsPassword;
+            TogglePasswordButton.Text = SecretKeyEntry.IsPassword ? "👁️" : "👁️‍🗨️";
+        }
     }
 
 }

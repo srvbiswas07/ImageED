@@ -2,8 +2,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ImageED.MainPage">
-    
-    <Grid RowDefinitions="Auto,*,Auto">
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
         <!-- Top Section - Image Display and Picker -->
         <Frame Grid.Row="0" 
                Margin="20"
@@ -24,8 +24,28 @@
             </Grid>
         </Frame>
 
+        <!-- Secret Key Input Section -->
+        <Frame Grid.Row="1"
+               Margin="20,0,20,20"
+               BorderColor="Gray"
+               CornerRadius="10">
+            <Grid ColumnDefinitions="*,Auto">
+                <Entry x:Name="SecretKeyEntry"
+                       Placeholder="Enter encryption key"
+                       IsPassword="True"
+                       Margin="5"/>
+                <Button Grid.Column="1"
+                        x:Name="TogglePasswordButton"
+                        Text="👁️"
+                        FontSize="18"
+                        BackgroundColor="Transparent"
+                        Clicked="OnTogglePasswordVisibility"
+                        Margin="0,0,5,0"/>
+            </Grid>
+        </Frame>
+
         <!-- Middle Section - Image List -->
-        <Frame Grid.Row="1" 
+        <Frame Grid.Row="2" 
                Margin="20,0,20,20"
                BorderColor="Gray"
                CornerRadius="10">
@@ -68,7 +88,7 @@
         </Frame>
 
         <!-- Bottom Section - Buttons -->
-        <Grid Grid.Row="2"
+        <Grid Grid.Row="3"
               Margin="20,0,20,20"
               ColumnDefinitions="*,*"
               ColumnSpacing="20">
